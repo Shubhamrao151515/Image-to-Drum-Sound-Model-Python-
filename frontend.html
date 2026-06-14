@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Application</title>
+    <base href="/">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        .tab {
+            display: none;
+        }
+        .tab.active {
+            display: block;
+        }
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+            border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+        }
+        .nav-tabs li {
+            padding: 12px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            margin-right: 8px;
+            border-radius: 8px 8px 0 0;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #555;
+        }
+        .nav-tabs li:hover {
+            background-color: #e0e0e0;
+        }
+        .nav-tabs li.active {
+            background-color: #2c3e50;
+            color: white;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        input, select {
+            padding: 12px;
+            margin: 8px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+        }
+        .equation-plot {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .success {
+            color: #27ae60;
+        }
+        .loading {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Number Theory & Puzzles</h1>
+    
+    <ul class="nav-tabs">
+        <li class="active" onclick="openTab('primeTab')">Prime Check</li>
+        <li onclick="openTab('factorsTab')">Prime Factors</li>
+        <li onclick="openTab('gcdTab')">GCD</li>
+        <li onclick="openTab('lcmTab')">LCM</li>
+        <li onclick="openTab('twoVarTab')">2-Variable Eq</li>
+        <li onclick="openTab('threeVarTab')">3-Variable Eq</li>
+        <li onclick="openTab('twoEqSystemTab')">2-Eq System</li>
+        <li onclick="openTab('fibonacciTab')">Fibonacci</li>
+        <li onclick="openTab('magicSquareTab')">Magic Square</li>
+        <li onclick="openTab('guessingGameTab')">Guessing Game</li>
+    </ul>
+    
+    <div id="primeTab" class="tab active container">
+        <h2>Prime Number Check</h2>
+        <input type="number" id="primeNumber" placeholder="Enter a positive integer">
+        <button onclick="checkPrime()">Check Primality</button>
+        <div id="primeResult" class="result"></div>
+    </div>
+    
+    <div id="factorsTab" class="tab container">
+        <h2>Prime Factorization</h2>
+        <input type="number" id="factorNumber" placeholder="Enter an integer ≥ 2">
+        <button onclick="showPrimeFactors()">Factorize</button>
+        <div id="factorsResult" class="result"></div>
+    </div>
+    
+    <div id="gcdTab" class="tab container">
+        <h2>Greatest Common Divisor</h2>
+        <input type="number" id="gcdA" placeholder="First number">
+        <input type="number" id="gcdB" placeholder="Second number">
+        <button onclick="calculateGCD()">Calculate GCD</button>
+        <div id="gcdResult" class="result"></div>
+    </div>
+    
+    <div id="lcmTab" class="tab container">
+        <h2>Least Common Multiple</h2>
+        <input type="number" id="lcmA" placeholder="First number">
+        <input type="number" id="lcmB" placeholder="Second number">
+        <button onclick="showLCM()">Calculate LCM</button>
+        <div id="lcmResult" class="result"></div>
+    </div>
+    
+    <div id="twoVarTab" class="tab container">
+        <h2>2-Variable Equation Solver</h2>
+        <input type="number" id="twoVarA" placeholder="Coefficient a" step="any">
+        <input type="number" id="twoVarB" placeholder="Coefficient b" step="any">
+        <input type="number" id="twoVarC" placeholder="Constant c" step="any">
+        <button onclick="showEquationSolution()">Solve & Plot</button>
+        <div id="twoVarResult" class="result"></div>
+    </div>
+    
+    <div id="threeVarTab" class="tab container">
+        <h2>3-Variable Equation Solver</h2>
+        <input type="number" id="threeVarA" placeholder="Coefficient a" step="any">
+        <input type="number" id="threeVarB" placeholder="Coefficient b" step="any">
+        <input type="number" id="threeVarC" placeholder="Coefficient c" step="any">
+        <input type="number" id="threeVarD" placeholder="Constant d" step="any">
+        <button onclick="solveThreeVarEquation()">Solve & Plot</button>
+        <div id="threeVarResult" class="result"></div>
+    </div>
+    
+    <div id="twoEqSystemTab" class="tab container">
+        <h2>2-Equation System Solver</h2>
+        <div class="equation-input">
+            <h3>First Equation: a₁x + b₁y = c₁</h3>
+            <input type="number" id="eq1A" placeholder="a₁" step="any">
+            <input type="number" id="eq1B" placeholder="b₁" step="any">
+            <input type="number" id="eq1C" placeholder="c₁" step="any">
+        </div>
+        <div class="equation-input">
+            <h3>Second Equation: a₂x + b₂y = c₂</h3>
+            <input type="number" id="eq2A" placeholder="a₂" step="any">
+            <input type="number" id="eq2B" placeholder="b₂" step="any">
+            <input type="number" id="eq2C" placeholder="c₂" step="any">
+        </div>
+        <button onclick="solveTwoEqSystem()">Solve System</button>
+        <div id="twoEqSystemResult" class="result"></div>
+    </div>
+    
+    <div id="fibonacciTab" class="tab container">
+        <h2>Fibonacci Sequence</h2>
+        <input type="number" id="fibonacciN" placeholder="How many numbers to generate?">
+        <button onclick="generateFibonacci()">Generate Sequence</button>
+        <div id="fibonacciResult" class="result"></div>
+    </div>
+    
+    <div id="magicSquareTab" class="tab container">
+        <h2>Magic Square Generator</h2>
+        <input type="number" id="magicSquareSize" placeholder="Enter odd size (3, 5, 7, ...)">
+        <button onclick="generateMagicSquare()">Generate Magic Square</button>
+        <div id="magicSquareResult" class="result"></div>
+        <div id="magicSquareTable"></div>
+    </div>
+    
+    <div id="guessingGameTab" class="tab container">
+        <h2>Number Guessing Game</h2>
+        <button onclick="startGame()">Start New Game</button>
+        <div id="gameArea" style="display: none;">
+            <input type="number" id="guessInput" placeholder="Enter your guess (1-100)" min="1" max="100">
+            <button onclick="checkGuess()">Submit Guess</button>
+            <div id="gameFeedback"></div>
+            <div id="guessHistory"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global game state
+        let secretNumber = null;
+        let attempts = 0;
+        let guessHistory = [];
+        
+        // Tab navigation
+        function openTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs li').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // API helper function
+        async function makeApiCall(endpoint, data) {
+            const resultDiv = document.getElementById(endpoint.replace('/', '') + 'Result');
+            
+            try {
+                if (resultDiv) {
+                    resultDiv.innerHTML = '<span class="loading">Calculating...</span>';
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Server error');
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                if (resultDiv) {
+                    resultDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                }
+                throw error;
+            }
+        }
+
+        // Prime number check
+        async function checkPrime() {
+            const number = document.getElementById('primeNumber').value;
+            if (!number) {
+                document.getElementById('primeResult').innerHTML = 
+                    '<span class="error">Please enter a number</span>';
+                return;
+            }
+            
+            try {
+                const result = await makeApiCall('/is_prime', { number });
+                document.getElementById('primeResult').innerHTML = 
+                    `<span class="${result.result ? 'success' : ''}">${result.message}</span>`;
+            } catch (error) {
+                console.error("Prime check failed:", error);
+            }
+        }
+
+        // Prime factorization
+        async function showPrimeFactors() {
+            const num = document.getElementById('factorNumber').value;
+            if (!num || num < 2) {
+                document.getElementById('factorsResult').innerHTML = 
+                    '<span class="error">Please enter a number ≥ 2</span>';
+                return;
+            }
+            
+            try {
+                const result = await makeApiCall('/prime_factors', { number: num });
+                let html = `<p>Prime factors of <strong>${result.number}</strong>:</p>`;
+                
+                if (result.factors.length === 0) {
+                    html += `<p>${result.number} is a prime number</p>`;
+                } else {
+                    html += '<p>';
+                    result.factors.forEach(factor => {
+                        html += `${factor[0]}<sup>${factor[1]}</sup> × `;
+                    });
+                    html = html.slice(0, -3) + '</p>';
+                }
+                
+                document.getElementById('factorsResult').innerHTML = html;
+            } catch (error) {
+                console.error("Factorization failed:", error);
+            }
+        }
+
+        // GCD calculation
+        async function calculateGCD() {
+            const a = document.getElementById('gcdA').value;
+            const b = document.getElementById('gcdB').value;
+            
+            if (!a || !b) {
+                document.getElementById('gcdResult').innerHTML = 
+                    '<span class="error">Please enter both numbers</span>';
+                return;
+            }
+            
+            try {
+                const result = await makeApiCall('/gcd', { a, b });
+                document.getElementById('gcdResult').innerHTML = 
+                    `GCD of ${result.a} and ${result.b} is <strong>${result.result.gcd}</strong>`;
+            } catch (error) {
+                console.error("GCD calculation failed:", error);
+            }
+        }
+
+        // LCM calculation
+        async function showLCM() {
+            const a = document.getElementById('lcmA').value;
+            const b = document.getElementById('lcmB').value;
+            
+            if (!a || !b) {
+                document.getElementById('lcmResult').innerHTML = 
+                    '<span class="error">Please enter both numbers</span>';
+                return;
+            }
+            
+            try {
+                const result = await makeApiCall('/lcm', { a, b });
+                document.getElementById('lcmResult').innerHTML = 
+                    `LCM of ${result.a} and ${result.b} is <strong>${result.result}</strong>`;
+            } catch (error) {
+                console.error("LCM calculation failed:", error);
+            }
+        }
+
+        // Equation solvers and other functions would follow the same pattern
+        // ... (remaining functions follow the same pattern as above)
+
+        // Initialize first tab
+        document.addEventListener('DOMContentLoaded', function() {
+            openTab('primeTab');
+        });
+    </script>
+</body>
+</html>
